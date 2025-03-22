@@ -1,0 +1,50 @@
+{
+  "name": "@nicotordev/fetch-client",
+  "version": "1.0.0",
+  "description": "Fetch client for Node.js & Browser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --config ./src/jest.config.cjs",
+    "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}'",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "prepare": "husky",
+    "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,scss,md}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4cidkid/flowcl-pagos.git"
+  },
+  "keywords": [
+    "fetch",
+    "client",
+    "node",
+    "browser"
+  ],
+  "author": "Nicolas Torres <nicotordev@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {},
+  "files": [
+    "dist"
+  ],
+  "lint-staged": {
+    "./src/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
