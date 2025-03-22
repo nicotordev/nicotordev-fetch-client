@@ -103,4 +103,4 @@ MIT
 
 ## ✍️ Author
 
-Created by [Your Name].
+Created by Nicolas Torres (nicotordev@gmail.com).

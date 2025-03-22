@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/4cidkid/flowcl-pagos.git"
+    "url": "git+https://github.com/nicotordev/-nicotordev-fetch-client.git"
   },
   "keywords": [
     "fetch",
