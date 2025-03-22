@@ -1,5 +1,4 @@
 import { FetchClientError } from "./errors";
-
 /**
  * FetchClient is a lightweight HTTP client wrapper around the Fetch API,
  * providing automatic error handling and JSON serialization for complex data.
@@ -61,6 +60,50 @@ export default class FetchClient {
     }
   }
 
+  private buildHeaders(
+    baseHeaders: RequestInit["headers"] = {},
+    request?: Request
+  ): Headers {
+    const headers = baseHeaders ? new Headers(baseHeaders) : new Headers();
+
+    if (request) {
+      const cookie = request.headers.get("cookie");
+      const auth = request.headers.get("authorization");
+
+      if (cookie) headers.set("Cookie", cookie);
+      if (auth) headers.set("Authorization", auth);
+    }
+
+    return headers;
+  }
+
+  private buildRequestInit<P>(
+    method: string,
+    data?: P,
+    config?: RequestInit,
+    request?: Request
+  ): RequestInit {
+    const isFormData =
+      typeof FormData !== "undefined" && data instanceof FormData;
+
+    const headers = this.buildHeaders(config?.headers, request);
+
+    if (!isFormData && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    return {
+      method,
+      headers,
+      body: data
+        ? isFormData
+          ? data
+          : JSON.stringify(this.transformObjectForSerialization(data))
+        : undefined,
+      ...config,
+    };
+  }
+
   /**
    * Handles the fetch response, throwing a custom FetchClientError if the response is not ok.
    */
@@ -89,18 +132,18 @@ export default class FetchClient {
   /**
    * Performs a GET request.
    */
-  public async get<T = unknown>(
-    endpoint: string,
-    config: RequestInit = {}
+  public async get<T>(
+    endpoint: string | URL,
+    config: RequestInit = {},
+    request?: Request
   ): Promise<T> {
     try {
-      const headers = { ...config.headers };
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...config,
         method: "GET",
-        headers,
+        headers: this.buildHeaders(config.headers, request),
       });
-      return await this.handleResponse<T>(response, config);
+      return await this.handleResponse(response, config);
     } catch (error) {
       throw error;
     }
@@ -112,20 +155,12 @@ export default class FetchClient {
   public async post<T = unknown>(
     endpoint: string,
     data: any,
-    config: RequestInit = {}
+    config: RequestInit = {},
+    request?: Request
   ): Promise<T> {
     try {
-      const headers = {
-        ...config.headers,
-        "Content-Type": "application/json",
-      };
-
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...config,
-        method: "POST",
-        headers,
-        body: JSON.stringify(this.transformObjectForSerialization(data)),
-      });
+      const requestInit = this.buildRequestInit("POST", data, config, request);
+      const response = await fetch(`${this.baseURL}${endpoint}`, requestInit);
 
       return await this.handleResponse<T>(response, config);
     } catch (error) {
@@ -139,20 +174,12 @@ export default class FetchClient {
   public async put<T = unknown, P = unknown>(
     endpoint: string,
     data: P,
-    config: RequestInit = {}
+    config: RequestInit = {},
+    request?: Request
   ): Promise<T> {
     try {
-      const headers = {
-        ...config.headers,
-        "Content-Type": "application/json",
-      };
-
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...config,
-        method: "PUT",
-        headers,
-        body: JSON.stringify(this.transformObjectForSerialization(data)),
-      });
+      const requestInit = this.buildRequestInit("PUT", data, config, request);
+      const response = await fetch(`${this.baseURL}${endpoint}`, requestInit);
 
       return await this.handleResponse<T>(response, config);
     } catch (error) {
@@ -165,17 +192,15 @@ export default class FetchClient {
    */
   public async delete<T = unknown>(
     endpoint: string,
-    config: RequestInit = {}
+    config: RequestInit = {},
+    request?: Request
   ): Promise<T> {
     try {
-      const headers = { ...config.headers };
-
       const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...config,
         method: "DELETE",
-        headers,
+        headers: this.buildHeaders(config.headers, request),
+        ...config,
       });
-
       return await this.handleResponse<T>(response, config);
     } catch (error) {
       throw error;
@@ -188,20 +213,12 @@ export default class FetchClient {
   public async patch<T = unknown, P = unknown>(
     endpoint: string,
     data: P,
-    config: RequestInit = {}
+    config: RequestInit = {},
+    request?: Request
   ): Promise<T> {
     try {
-      const headers = {
-        ...config.headers,
-        "Content-Type": "application/json",
-      };
-
-      const response = await fetch(`${this.baseURL}${endpoint}`, {
-        ...config,
-        method: "PATCH",
-        headers,
-        body: JSON.stringify(this.transformObjectForSerialization(data)),
-      });
+      const requestInit = this.buildRequestInit("PATCH", data, config, request);
+      const response = await fetch(`${this.baseURL}${endpoint}`, requestInit);
 
       return await this.handleResponse<T>(response, config);
     } catch (error) {
