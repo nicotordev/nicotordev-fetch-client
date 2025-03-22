@@ -15,9 +15,9 @@ A lightweight, extensible HTTP client built around the native Fetch API, with cu
 ## 📦 Installation
 
 ```bash
-npm install
+npm install @nicotordev/fetch-client
 # or
-yarn install
+yarn install @nicotordev/fetch-client
 ```
 
 This module assumes you are using it within a TypeScript project.
